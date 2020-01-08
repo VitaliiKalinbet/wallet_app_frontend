@@ -1,12 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import routes from '../routes/routes';
-import Loader from './Loader/Loader';
 
 const App = () => {
   return (
     <BrowserRouter>
-      {false && <Loader />}
       <Switch>
         <Route
           path={routes.LOGIN_PAGE.path}
