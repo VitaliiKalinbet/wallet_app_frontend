@@ -5,8 +5,8 @@ const globalActionsSpiner = spiner => ({
   payload: spiner,
 });
 
-const global = {
+const globalAction = {
   isLoading: globalActionsSpiner,
 };
 
-export default global;
+export default globalAction;
