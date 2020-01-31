@@ -99,7 +99,7 @@ class LoginForm extends Component {
                       <p className={styles.error}>{errors.password}</p>
                     )}
                   </div>
-                  <a href="https://cryptic-citadel-50371.herokuapp.com/api/auth/google">
+                  <a href="https://app-wallet-14.herokuapp.com/api/auth/google">
                     <GoogleIcon className={styles.googleImage} />
                   </a>
                   <button

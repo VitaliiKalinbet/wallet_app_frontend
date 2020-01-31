@@ -5,7 +5,7 @@ axios.defaults.headers.get['Content-Type'] = 'application/json';
 axios.defaults.headers.put['Content-Type'] = 'application/json';
 axios.defaults.headers.patch['Content-Type'] = 'application/json';
 
-axios.defaults.baseURL = 'https://cryptic-citadel-50371.herokuapp.com/api';
+axios.defaults.baseURL = 'https://app-wallet-14.herokuapp.com/api';
 
 export const setToken = token => ({
   headers: {
