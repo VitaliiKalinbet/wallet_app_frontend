@@ -1,4 +1,3 @@
-// import React from 'react';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -13,20 +12,20 @@ import styles from './Balance.module.css';
 class Balance extends Component {
   static propTypes = {
     balance: PropTypes.number.isRequired,
-    qwerty: PropTypes.arrayOf().isRequired,
+    financeData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   };
 
   state = {};
 
   render() {
     const windowWidth = document.documentElement.clientWidth;
-    const { balance, qwerty } = this.props;
-    const expenses = qwerty
+    const { balance, financeData } = this.props;
+    const expenses = financeData
       .filter(q => q.type === 'expense')
       .reduce((acc, value) => {
         return acc + value.amount;
       }, 0);
-    const income = qwerty
+    const income = financeData
       .filter(q => q.type === 'income')
       .reduce((acc, value) => {
         return acc + value.amount;
@@ -42,23 +41,9 @@ class Balance extends Component {
   }
 }
 
-// const Balance = ({ balance }) => {
-//   const windowWidth = document.documentElement.clientWidth;
-//   return (
-//     <>
-//       <h5 className={styles.title}>Balance {windowWidth >= 768 && ':'}</h5>{' '}
-//       <p className={styles.amount}>{balance} UAH</p>
-//     </>
-//   );
-// };
-
 const mapStateToProps = state => ({
   balance: getBalance(state),
-  qwerty: getFinanceData(state),
+  financeData: getFinanceData(state),
 });
-
-// Balance.propTypes = {
-//   balance: PropTypes.number.isRequired,
-// };
 
 export default connect(mapStateToProps)(Balance);
