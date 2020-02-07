@@ -13,10 +13,6 @@
   background-color: #66778e;
 }
 
-.svg {
-  fill: #ffffff;
-}
-
 .text {
   display: none;
 }
@@ -36,11 +32,12 @@
     align-items: flex-end;
     text-decoration: none;
     color: #7e8e94;
+    text-align: center;
+    margin: 0;
   }
 
   .svg {
     margin: 0 10px 0 0;
-    fill: #7e8e94;
   }
 
   .text::after {
@@ -85,7 +82,6 @@
   }
 
   .svg {
-    fill: #ffffff;
     margin-right: 16px;
   }
 }

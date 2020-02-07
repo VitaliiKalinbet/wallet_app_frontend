@@ -1,109 +1,148 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable */
+
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { ReactComponent as Trash } from '../../images/trash.svg';
 import styles from './HomeTab.module.css';
+import { deleteTransaction } from '../../redux/finance/financeOperations';
 
 function timestampToDate(timestamp) {
-  const str = timestamp.slice(0, 14);
-  const y = str.slice(2, 4);
-  const m = str.slice(5, 7);
-  const d = str.slice(8, 10);
-  return `${d}.${m}.${y}`;
+  return moment(timestamp).format('DD/MM/YYYY');
 }
+
+const sortByDate = dates => {
+  if (dates.length > 0) {
+    dates.sort((a, b) => {
+      return Date.parse(b.transactionDate) - Date.parse(a.transactionDate);
+    });
+  }
+  return dates;
+};
 
 class HomeTab extends React.Component {
   static propTypes = {
     transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
+    deleteTransaction: PropTypes.func.isRequired,
   };
 
-  state = {};
-
-  // componentDidMount() {
-  //   // console.log(this.props.transactions);
-  // }
-
-  /* onDelete(t) {
-    const { transactions } = this.state;
-    transactions.splice(transactions.indexOf(t), 1);
-    this.setState({ transactions });
-  } */
+  onDelete({ _id: id }) {
+    const { deleteTransaction: deleteTr } = this.props;
+    deleteTr(id);
+  }
 
   render() {
     const { transactions } = this.props;
+    const windowWidth = document.documentElement.clientWidth;
     return (
       <div className={styles.transactionHistory}>
-        <div>
-          <div className={styles.transactionHead}>
-            <div className={styles.textCenter}>Date</div>
-            <div className={styles.textCenter}>Type</div>
-            <div>Category</div>
-            <div>Comment</div>
-            <div className={styles.textCenter}>Sum</div>
-            <div>Balance</div>
-            <div className={styles.textCenter}>Delete</div>
-          </div>
-          {typeof transactions === 'object' && transactions.length === 0 ? (
-            // {transactions.length === 0 ? (
-            <div className={styles.addTransaction}>Please add transaction</div>
-          ) : (
-            transactions.map(t => (
-              // eslint-disable-next-line no-underscore-dangle
-              <div key={t._id} className={styles.transaction}>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Date</div>
-                  <div className={`${styles.val} ${styles.textCenter}`}>
-                    {timestampToDate(t.transactonDate)}
-                  </div>
-                </div>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Type</div>
-                  <div className={`${styles.val} ${styles.textCenter}`}>
-                    {t.type === 'Income' ? '+' : '-'}
-                  </div>
-                </div>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Category</div>
-                  <div className={styles.val}>{t.category}</div>
-                </div>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Comment</div>
-                  <div className={styles.val}>{t.comment}</div>
-                </div>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Sum</div>
-                  <div
-                    className={`${styles.val} ${styles.textCenter} ${
-                      t.type === 'Expense' ? styles.hilite : ''
-                    }`}
+        {windowWidth < 768 &&
+          transactions.map(trans => (
+            <table className={styles.table} key={trans._id}>
+              <tbody>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Date</th>
+                  <td className={styles.td}>
+                    {timestampToDate(trans.transactionDate)}
+                  </td>
+                </tr>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Type</th>
+                  <td className={styles.td}>
+                    {trans.type === 'income' ? '+' : '-'}
+                  </td>
+                </tr>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Category</th>
+                  <td className={styles.td}>{trans.category}</td>
+                </tr>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Comment</th>
+                  <td>{trans.comment}</td>
+                </tr>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Sum</th>
+                  <td
+                    className={styles.td}
+                    className={trans.type === 'expense' ? styles.hilite : ''}
                   >
-                    {t.amount}
-                  </div>
-                </div>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Balance</div>
-                  <div className={`${styles.val} ${styles.textCenter}`}>
-                    {t.balanceAfter}
-                  </div>
-                </div>
-                <div className={styles.pair}>
-                  <div className={styles.key}>Delete</div>
-                  <div className={`${styles.val} ${styles.textCenter}`}>
-                    <Trash className={styles.deleteBtn} />
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
+                    {trans.amount}
+                  </td>
+                </tr>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Balance</th>
+                  <td className={styles.td}>{trans.balanceAfter}</td>
+                </tr>
+                <tr className={styles.tr}>
+                  <th className={styles.th}>Delete</th>
+                  <td className={styles.td}>
+                    <Trash
+                      className={styles.deleteBtn}
+                      onClick={() => this.onDelete(trans)}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          ))}
+        {windowWidth >= 768 && (
+          <table className={styles.table}>
+            <thead>
+              <tr className={styles.tr}>
+                <th className={styles.th}>Date</th>
+                <th className={styles.th}>Type</th>
+                <th className={styles.th}>Category</th>
+                <th className={styles.th}>Comment</th>
+                <th className={styles.th}>Sum</th>
+                <th className={styles.th}>Balance</th>
+                <th className={styles.th}>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map(trans => (
+                <tr className={styles.tr} key={trans._id}>
+                  <td className={styles.td}>
+                    {timestampToDate(trans.transactionDate)}
+                  </td>
+                  <td className={styles.td}>
+                    {trans.type === 'income' ? '+' : '-'}
+                  </td>
+                  <td className={styles.td}>{trans.category}</td>
+                  <td className={styles.td}>{trans.comment}</td>
+                  <td
+                    className={styles.td}
+                    className={trans.type === 'expense' ? styles.hilite : ''}
+                  >
+                    {trans.amount}
+                  </td>
+                  <td className={styles.td}>{trans.balanceAfter}</td>
+                  <td className={styles.td}>
+                    <Trash
+                      className={styles.deleteBtn}
+                      onClick={() => this.onDelete(trans)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {transactions.length === 0 && (
+          <div className={styles.addTransaction}>Please add transaction</div>
+        )}
       </div>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  transactions: state.finance.data,
+  transactions: sortByDate(state.finance.data),
 });
 
-export default connect(mapStateToProps)(HomeTab);
+const mapDispatchToProps = dispatch => ({
+  deleteTransaction: transactionId =>
+    dispatch(deleteTransaction(transactionId)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(HomeTab);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
+import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import routes from '../routes/routes';
 import Loader from './Loader/Loader';
@@ -22,7 +22,7 @@ class App extends Component {
     const { isLoading } = this.props;
     return (
       <>
-        <BrowserRouter>
+        <HashRouter>
           <Switch>
             <Route
               path={routes.LOGIN_PAGE.path}
@@ -39,7 +39,7 @@ class App extends Component {
             />
             <Redirect to={routes.LOGIN_PAGE.path} />
           </Switch>
-        </BrowserRouter>
+        </HashRouter>
         {isLoading && <Loader />}
       </>
     );
