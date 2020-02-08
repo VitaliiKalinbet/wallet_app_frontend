@@ -242,6 +242,7 @@ class DiagramTab extends Component {
             income={this.getSum(income)}
             currentYear={currentYear}
             currentMonth={currentMonth}
+            {...this.state}
           />
         </div>
       </div>
