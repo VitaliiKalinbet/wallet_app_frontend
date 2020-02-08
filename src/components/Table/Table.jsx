@@ -3,32 +3,16 @@ import Select from 'react-select';
 import PropTypes from 'prop-types';
 import styles from './Table.module.css';
 
-const month = [
-  { label: 'All months', value: '' },
-  { label: 'January', value: 'January' },
-  { label: 'February', value: 'February' },
-  { label: 'March', value: 'March' },
-  { label: 'April', value: 'April' },
-  { label: 'May', value: 'May' },
-  { label: 'June', value: 'June' },
-  { label: 'July', value: 'July' },
-  { label: 'August', value: 'August' },
-  { label: 'September', value: 'September' },
-  { label: 'October', value: 'October' },
-  { label: 'November', value: 'November' },
-  { label: 'December', value: 'December' },
-];
-
-const year = [
-  { label: 'All years', value: 0 },
-  { label: 2021, value: 2021 },
-  { label: 2020, value: 2020 },
-  { label: 2019, value: 2019 },
-  { label: 2018, value: 2018 },
-  { label: 2017, value: 2017 },
-];
-
-const Stateless = ({ data, handleChange, expenses, income }) => {
+const Stateless = ({
+  data,
+  handleChange,
+  expenses,
+  income,
+  year,
+  month,
+  currentMonth,
+  currentYear,
+}) => {
   return (
     <div className={styles.stateless}>
       <div className={styles.statelessSelect}>
@@ -36,14 +20,14 @@ const Stateless = ({ data, handleChange, expenses, income }) => {
           <Select
             onChange={handleChange}
             options={month}
-            defaultValue={{ label: 'January', value: 'January' }}
+            defaultValue={{ label: currentMonth, value: currentMonth }}
           />
         </div>
         <div className={styles.statelessSelectGroup}>
           <Select
             onChange={handleChange}
             options={year}
-            defaultValue={{ label: 2020, value: 2020 }}
+            defaultValue={{ label: currentYear, value: currentYear }}
           />
         </div>
       </div>

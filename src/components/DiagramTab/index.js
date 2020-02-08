@@ -20,6 +20,21 @@ const colors = [
   '#507c3a',
 ];
 
+const calendarMonths = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
+
 class DiagramTab extends Component {
   static propTypes = {
     finance: PropTypes.shape({
@@ -31,8 +46,10 @@ class DiagramTab extends Component {
     expenses: [],
     income: [],
     statistics: [],
-    year: 0,
-    month: '',
+    currentYear: Number(moment(moment()).format('YYYY')),
+    currentMonth: moment(moment()).format('MMMM'),
+    month: [{ label: 'All months', value: '' }],
+    year: [{ label: 'All years', value: 0 }],
     data: {
       labels: [],
       datasets: [
@@ -47,27 +64,60 @@ class DiagramTab extends Component {
 
   componentDidMount = () => {
     const { finance } = this.props;
+    const { currentMonth, currentYear } = this.state;
 
     const allExpenses = this.filterTransactions(finance.data, 'expense');
     const allIncome = this.filterTransactions(finance.data, 'income');
 
     this.setState({ expenses: allExpenses, income: allIncome });
 
-    const totalCosts = this.getTotal(allExpenses);
+    this.sortTransactions(finance.data, currentMonth, currentYear);
 
-    this.formStatistics(totalCosts);
+    const years = finance.data
+      .map(trans =>
+        Number(moment(Date.parse(trans.transactionDate)).format('YYYY')),
+      )
+      .sort();
+
+    const months = finance.data.map(trans =>
+      moment(Date.parse(trans.transactionDate)).format('MMMM'),
+    );
+
+    years.forEach((year, idx) =>
+      years.indexOf(year) === idx
+        ? this.setState(prevState => ({
+            year: [...prevState.year, { label: year, value: year }],
+          }))
+        : null,
+    );
+
+    calendarMonths.forEach(calendarMonth => {
+      months.forEach((month, idx) =>
+        calendarMonth === month && months.indexOf(month) === idx
+          ? this.setState(prevState => ({
+              month: [
+                ...prevState.month,
+                { label: calendarMonth, value: calendarMonth },
+              ],
+            }))
+          : null,
+      );
+    });
   };
 
   componentDidUpdate = (prevProps, prevState) => {
-    const { year, month, statistics } = this.state;
+    const { currentYear, currentMonth, statistics } = this.state;
     const { finance } = this.props;
 
     if (prevState.statistics !== statistics) {
       this.filterStatistics();
     }
 
-    if (month !== prevState.month || year !== prevState.year) {
-      this.sortTransactions(finance.data, month, year);
+    if (
+      currentMonth !== prevState.currentMonth ||
+      currentYear !== prevState.currentYear
+    ) {
+      this.sortTransactions(finance.data, currentMonth, currentYear);
     }
   };
 
@@ -116,13 +166,13 @@ class DiagramTab extends Component {
     }));
   };
 
-  sortTransactions(transactions, month, year) {
+  sortTransactions(transactions, currentMonth, currentYear) {
     const sorted = transactions.filter(trans => {
       const date = moment(Date.parse(trans.transactionDate)).format(
         'YYYY MMMM',
       );
-      const byMonth = month ? date.includes(month) : true;
-      const byYear = year ? date.includes(year) : true;
+      const byMonth = date.includes(currentMonth);
+      const byYear = date.includes(currentYear);
       return byMonth && byYear;
     });
 
@@ -137,11 +187,10 @@ class DiagramTab extends Component {
   }
 
   handleChange = ({ value }) => {
-    if (typeof value === 'string') {
-      this.setState({ month: value, statistics: [] });
-    } else {
-      this.setState({ year: value, statistics: [] });
-    }
+    this.setState(prevState => ({
+      currentMonth: typeof value === 'string' ? value : prevState.currentMonth,
+      currentYear: typeof value !== 'string' ? value : prevState.currentYear,
+    }));
   };
 
   getSum = transaction =>
@@ -156,7 +205,15 @@ class DiagramTab extends Component {
       wrapper,
     } = styles;
 
-    const { data, statistics, income } = this.state;
+    const {
+      data,
+      statistics,
+      income,
+      year,
+      month,
+      currentYear,
+      currentMonth,
+    } = this.state;
 
     return (
       <div className={diagram}>
@@ -177,10 +234,14 @@ class DiagramTab extends Component {
           </div>
 
           <Table
+            year={year}
+            month={month}
             data={statistics}
             handleChange={this.handleChange}
             expenses={this.getSum(statistics)}
             income={this.getSum(income)}
+            currentYear={currentYear}
+            currentMonth={currentMonth}
           />
         </div>
       </div>
