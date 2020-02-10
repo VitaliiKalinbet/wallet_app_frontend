@@ -12,8 +12,7 @@ const Stateless = ({
   month,
   currentMonth,
   currentYear,
-}) => {
-  return (
+}) => (
     <div className={styles.stateless}>
       <div className={styles.statelessSelect}>
         <div className={styles.statelessSelectGroup}>
@@ -67,7 +66,6 @@ const Stateless = ({
       </div>
     </div>
   );
-};
 
 Stateless.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
